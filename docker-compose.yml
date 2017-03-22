@@ -1,0 +1,32 @@
+version: '2'
+services:
+  traefik:
+    image: traefik:v1.2.0
+    container_name: traefik
+    restart: always
+    command: --web --docker --docker.exposedbydefault=false --logLevel=DEBUG
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+    logging:
+      options:
+        max-size: 50m
+  dnsmasq:
+    build: .
+    container_name: dnsmasq
+    restart: always
+    ports:
+      - "53:53/udp"
+      - "8053:8080"
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+    logging:
+      options:
+        max-size: 50m
+networks:
+  default:
+    external:
+      name: traefik
