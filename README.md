@@ -2,7 +2,7 @@
 
 This little project provide a DNS server ([Dnsmasq](https://wiki.debian.org/HowTo/dnsmasq) with [regex support](https://github.com/cuckoohello/dnsmasq-regex)) and a reverse proxy ([Træfɪk](https://traefik.io))
 
-![spack.svg](./stack.svg)
+![spack.svg](./stack.png)
 
 ## Requirements
 
