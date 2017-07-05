@@ -1,23 +1,38 @@
 # Docker Development Stack
 
+**Access your Docker containers with a domain name 🎉**
+
 This little project provide a DNS server ([Dnsmasq](https://wiki.debian.org/HowTo/dnsmasq) with [regex support](https://github.com/cuckoohello/dnsmasq-regex)) and a reverse proxy ([Træfɪk](https://traefik.io))
 
 ![spack.svg](./stack.png)
 
 ## Requirements
 
-All you need is [Docker](https://docs.docker.com/engine/installation/) 
-or [Docker4Mac](https://docs.docker.com/docker-for-mac/), 
-or [Docker4Windows](https://docs.docker.com/docker-for-windows/).
+- A linux distro with [NetworkManager](https://wiki.gnome.org/Projects/NetworkManager) (Ubuntu, Debian, Fedora, CentOS, ArchLinux ...)
+- [Docker](https://docs.docker.com/engine/installation/) 
+- [Docker Compose](https://docs.docker.com/compose/install/).
 
-Be sure to install [Docker Compose](https://docs.docker.com/compose/install/).
+Quick Docker installation instructions : 
 
+```bash
+# Install docker
+curl -fsSL https://get.docker.com/ | sh
+# Install docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+# Allow your current user to access the docker binary
+sudo usermod -aG docker $USER
+```
+
+Log in and out from your Linux session
 
 ## Installation
 
-```
-docker network create traefik
-docker-compose up -d
+```bash
+# build the local DNS image (dnsmasq)
+make build
+# run the local DNS
+make run
 ```
 
 You should be able to access:
@@ -28,38 +43,9 @@ You should be able to access:
 
 **If something goes wrong, read the [troubleshoot](#troubleshoot) section**
 
-### Configure your DNS
-
-You need to configure your DNS to point to `127.0.0.1`
-
-#### On MacOSX
-
-![mac-dns](./dns-mac.png)
-
-#### On Linux
-
-Here an example with Ubuntu 16.04 with Gnome3 :
-
-Open the Network Manager connection editor
-
-```
-npm-connection-editor
-```
-
-Select your main network interface and choose `Edit`
-
-![linux-nm-edit](./linux-nm-edit.png)
-
-Click on the `IPv4 parameters` tab and fill `DNS server` with `127.0.0.1`
-
-![linux-nm-edit](./linux-nm-config.png)
-
-#### On Windows
-
-_To be documented..._
-
-
 ## Test your stack
+
+Please see the  `./examples` folder for a `docker-compose` example.
 
 Let's run a Docker container using Træfɪk labels 
 allowing us to use `dev.test.europe1.fr` as domain name 
@@ -94,20 +80,6 @@ X-Forwarded-Server: 6409f34eac5e
 > If you want to know more, RTFM of Træfɪk right [here](https://docs.traefik.io/)
 
 ## Troubleshoot
-
-- **When running `docker-compose`, it say that port `53` is already allocated**
-
-	If you are using **Ubuntu** (or any Ubuntu based distro), you should know that **Network Manager** 
-	is using a modified version of dnsmasq to cache dns requests.
-
-	To disable dnsmasq open a terminal and run :
-
-	```shell
-	# disable dnsmasq in /etc/NetworkManager/NetworkManager.conf
-	sudo sed -i 's/^dns=dnsmasq/#&/' /etc/NetworkManager/NetworkManager.conf
-	# restart the machine
-	sudo reboot
-	```
 
 - **When running `docker-compose`, it say that port `80` and/or `8080` and/or `8053` is/are already allocated**
 

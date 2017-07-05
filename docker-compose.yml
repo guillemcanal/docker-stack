@@ -1,12 +1,18 @@
 version: '2'
 services:
   traefik:
-    image: traefik:v1.2.0
+    image: traefik:v1.3.2
     container_name: traefik
     restart: always
-    command: --web --docker --docker.exposedbydefault=false --logLevel=DEBUG
+    command:
+      - --defaultEntryPoints=https,http
+      - --docker
+      - --docker.exposedbydefault=false
+      - --logLevel=INFO
+      - --web
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -15,7 +21,7 @@ services:
       options:
         max-size: 50m
   dnsmasq:
-    build: .
+    image: lagardere/dnsmasq
     container_name: dnsmasq
     restart: always
     ports:
