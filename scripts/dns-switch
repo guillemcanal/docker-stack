@@ -1,0 +1,90 @@
+#!/bin/bash
+set -e -o pipefail
+
+########################
+# Enable the local DNS #
+########################
+
+# Get main Interface Name
+IF_NAME=$(route | grep '^default' | grep -o '[^ ]*$')
+
+# Get Active connection UUID 
+IF_UUID=$(nmcli -f UUID,DEVICE connection | grep $IF_NAME | awk '{ print $1 }')
+LOCAL_IP=get_local_ip
+
+get_local_ip() {
+  ip route get 8.8.8.8 | head -1 | cut -d' ' -f8
+}
+
+enable_local_dns() {
+    disable_system_dnsmasq
+    nmcli connection modify $IF_UUID ipv4.ignore-auto-dns yes
+    nmcli connection modify $IF_UUID ipv4.dns 127.0.0.1
+    restart_interface
+}
+
+disable_local_dns() {
+    nmcli -f ipv4 connection modify $IF_UUID ipv4.ignore-auto-dns no
+    enable_system_dnsmasq
+    restart_interface
+}
+
+restart_interface() {
+    nmcli device disconnect $IF_NAME
+    nmcli device connect $IF_NAME
+}
+
+disable_system_dnsmasq() {
+    if [ ! -f /etc/NetworkManager/NetworkManager.conf ]; then
+      echo "Your system don't appear to use NetworkManager, abording..."
+      exit 1
+    fi
+
+    sudo sed -i 's/^dns=dnsmasq/#&/' /etc/NetworkManager/NetworkManager.conf
+}
+
+enable_system_dnsmasq() {
+  if [ ! -f /etc/NetworkManager/NetworkManager.conf ]; then
+    echo "Your system don't appear to use NetworkManager, abording..."
+    exit 1
+  fi
+
+  sudo sed -i 's/^#dns=dnsmasq/dns=dnsmasq/' /etc/NetworkManager/NetworkManager.conf
+}
+
+show_interface_info() {
+    echo "Public IP:        $(dig +short myip.opendns.com @resolver1.opendns.com)"
+    echo "Local IP:         $LOCAL_IP"
+    echo "Local DNS:        $(nmcli -f ipv4.dns c show $IF_UUID | awk '{ print $2 }')"
+    echo "Ignore auto DNS:  $(nmcli -f ipv4.ignore-auto-dns c show $IF_UUID | awk '{ print $2 }')"
+    
+}
+
+usage() {
+    echo "USAGE: dns-switch COMMAND"
+    echo ""
+    echo "COMMANDS:"
+    echo "---------"
+    echo "enable    Enable local DNS"
+    echo "disable   Disable local DNS"
+    echo "show      Show interface info"
+    echo "ip        Show the local IP address"
+}
+
+case $1 in
+  'enable')
+    enable_local_dns
+  ;;
+  'disable')
+    disable_local_dns
+  ;;
+  'show')
+    show_interface_info
+  ;;
+  'ip')
+    get_local_ip
+  ;;
+*)
+  usage
+  ;;
+esac

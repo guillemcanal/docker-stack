@@ -1,0 +1,17 @@
+# This docker-compose show how to use Traefik on your machine
+# It will expose a demo container at dev.demo.europe1.fr
+version: '2'
+services:
+  demo:
+    image: "emilevauge/whoami"
+    networks:
+      - "traefik"
+      - "default"
+    labels:
+      - "traefik.docker.network=traefik"
+      - "traefik.enable=true"
+      - "traefik.backend=demo"
+      - "traefik.frontend.rule=Host: dev.demo.europe1.fr"
+networks:
+  traefik:
+    external: true
