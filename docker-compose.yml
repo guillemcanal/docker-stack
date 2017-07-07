@@ -3,23 +3,20 @@ services:
   traefik:
     image: traefik:v1.3.2
     container_name: traefik
-    restart: always
-    command:
-      - --defaultEntryPoints=https,http
-      - --docker
-      - --docker.exposedbydefault=false
-      - --logLevel=INFO
-      - --web
+    restart: unless-stopped
+    command: --consul --consul.endpoint=consul:8500
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /dev/null:/traefik.toml
+      - "./certs:/etc/traefik/ssl"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik.toml:/etc/traefik/conf/traefik.toml"
     logging:
       options:
         max-size: 50m
+  
   dnsmasq:
     image: lagardere/dnsmasq
     container_name: dnsmasq
@@ -32,6 +29,13 @@ services:
     logging:
       options:
         max-size: 50m
+  consul:
+    image: consul
+    container_name: consul
+    volumes:
+      - "./certs:/etc/traefik/ssl"
+    ports:
+      - "8500:8500"
 networks:
   default:
     external:

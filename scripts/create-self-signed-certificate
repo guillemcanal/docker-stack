@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+read -p "certificate name ? " CA_NAME
+read -p "CA domain ? " CA_DOMAIN
+read -p "Alternative names ? (separate with a coma) " ALT_NAMES
+
+
+# Process Alternative Names
+DNS_ADDRESSES=""
+ALT_NAMES=$(echo $ALT_NAMES | tr "," "\n")
+INDEX=1
+for DNS in $ALT_NAMES; do
+    DNS_ADDRESSES="${DNS_ADDRESSES}DNS.$INDEX = $DNS\n"
+    let INDEX=${INDEX}+1
+done
+
+
+CONFIG=$(cat <<END
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+ 
+[ dn ]
+C=FR
+ST=Paris
+L=Paris
+O=Lagardere
+OU=IT
+emailAddress=admin@lagardere-active.com
+CN = $CA_DOMAIN
+END
+);
+
+EXTFILE=$(cat <<END
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+END
+);
+
+EXTFILE=$(echo "$EXTFILE"; echo -e $DNS_ADDRESSES)
+
+
+openssl genrsa -out $CA_NAME.key 2048
+
+openssl req -new -key $CA_NAME.key -out $CA_NAME.csr -config <( echo "$CONFIG" )
+
+openssl x509 -req \
+-passin pass:23071986mMR \
+-in $CA_NAME.csr \
+-CA rootCA.pem \
+-CAkey rootCA.key \
+-CAcreateserial \
+-out $CA_NAME.crt \
+-days 500 -sha256 \
+-extfile <( echo "$EXTFILE" )

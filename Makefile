@@ -8,8 +8,9 @@ build: ## Build the Lagardere DNS Docker image
 
 run: ## Start Traefik and your local DNS
 	@docker network create traefik 2> /dev/null | true;
-	@scripts/dns-switch enable
+	@scripts/dns-switch before-enable
 	@docker-compose up -d
+	@script/dns-switch enable
 
 clean: ## Remove Traefik and your local DNS
 	@docker-compose down 2> /dev/null | true;

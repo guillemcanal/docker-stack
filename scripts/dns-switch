@@ -17,9 +17,6 @@ get_local_ip() {
 }
 
 enable_local_dns() {
-    disable_system_dnsmasq
-    sudo service network-manager restart
-    sudo killall dnsmasq
     nmcli connection modify $IF_UUID ipv4.ignore-auto-dns yes
     nmcli connection modify $IF_UUID ipv4.dns 127.0.0.1
     restart_interface
@@ -28,8 +25,6 @@ enable_local_dns() {
 disable_local_dns() {
     nmcli -f ipv4 connection modify $IF_UUID ipv4.ignore-auto-dns no
     enable_system_dnsmasq
-    sudo service network-manager restart
-    restart_interface
 }
 
 restart_interface() {
@@ -43,7 +38,9 @@ disable_system_dnsmasq() {
       exit 1
     fi
 
-    sudo sed -i 's/^dns=dnsmasq/#&/' /etc/NetworkManager/NetworkManager.conf
+    sudo sed -i 's/^dns=dnsmasq/#dns=dnsmasq/' /etc/NetworkManager/NetworkManager.conf
+    sudo service network-manager restart
+    sudo killall dnsmasq &> /dev/null || true
 }
 
 enable_system_dnsmasq() {
@@ -53,6 +50,7 @@ enable_system_dnsmasq() {
   fi
 
   sudo sed -i 's/^#dns=dnsmasq/dns=dnsmasq/' /etc/NetworkManager/NetworkManager.conf
+  sudo service network-manager restart
 }
 
 show_interface_info() {
@@ -75,6 +73,9 @@ usage() {
 }
 
 case $1 in
+  'before-enable')
+    disable_system_dnsmasq
+  ;;
   'enable')
     enable_local_dns
   ;;
