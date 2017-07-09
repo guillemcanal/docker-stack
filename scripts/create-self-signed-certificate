@@ -46,16 +46,16 @@ END
 EXTFILE=$(echo "$EXTFILE"; echo -e $DNS_ADDRESSES)
 
 
-openssl genrsa -out $CA_NAME.key 2048
+openssl genrsa -out  ~/ssl/$CA_NAME.key 2048
 
-openssl req -new -key $CA_NAME.key -out $CA_NAME.csr -config <( echo "$CONFIG" )
+openssl req -new -key  ~/ssl/$CA_NAME.key -out  ~/ssl/$CA_NAME.csr -config <( echo "$CONFIG" )
 
 openssl x509 -req \
 -passin pass:23071986mMR \
--in $CA_NAME.csr \
--CA rootCA.pem \
--CAkey rootCA.key \
+-in  ~/ssl/$CA_NAME.csr \
+-CA  ~/ssl/rootCA.pem \
+-CAkey  ~/ssl/rootCA.key \
 -CAcreateserial \
--out $CA_NAME.crt \
+-out  ~/ssl/$CA_NAME.crt \
 -days 500 -sha256 \
 -extfile <( echo "$EXTFILE" )

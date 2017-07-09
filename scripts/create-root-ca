@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 mkdir ~/ssl/
+echo "create root CA key"
 openssl genrsa -des3 -out ~/ssl/rootCA.key 2048
+echo "create root CA certificate"
 openssl req -x509 -new -nodes -key ~/ssl/rootCA.key -sha256 -days 1024 -out ~/ssl/rootCA.pem
