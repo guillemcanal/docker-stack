@@ -20,7 +20,11 @@ network_local_ip() {
     _not_implemented
 }
 
+network_add_root_ca() {
+    _not_implemented
+}
+
 _not_implemented() {
-	echo "\"$__cmd\" is not yet implemented on windows. abording"
+	echo "[error] \"$__cmd\" is not yet implemented on windows. abording"
 	exit 1
 }

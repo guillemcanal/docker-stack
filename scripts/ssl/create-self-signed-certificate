@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__root="$(dirname $(dirname $__dir))"
+
+echo $__root
+
+create_self_signed_certificate() {
+
+    [ -z "$ROOT_CA_PASSWORD" ] && { echo "[error] you need to set the ROOT_CA_PASSWORD environment variable, abording"; exit 1; }
+
+    # the name of the certificate (ex: mydomain)
+    CA_NAME=$1
+
+    # the main domain (ex: mydomain.fr)
+    CA_DOMAIN=$2
+
+    # alternative domain names (ex: *.mydomain.fr, *.www.mydomain.fr)
+    ALT_NAMES=$3
+
+    # process Alternative Names
+    DNS_ADDRESSES=""
+    ALT_NAMES=$(echo $ALT_NAMES | tr "," "\n")
+    INDEX=1
+    for DNS in $ALT_NAMES; do
+        DNS_ADDRESSES="${DNS_ADDRESSES}DNS.$INDEX = $DNS\n"
+        let INDEX=${INDEX}+1
+    done
+
+CONFIG=$(cat <<END
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+
+[ dn ]
+C=FR
+ST=Paris
+L=Paris
+O=Lagardere
+OU=IT
+emailAddress=admin@lagardere-active.com
+CN = $CA_DOMAIN
+END
+);
+
+EXTFILE=$(cat <<END
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+
+[alt_names]
+END
+);
+
+    EXTFILE=$(echo "$EXTFILE"; echo -e $DNS_ADDRESSES)
+
+    openssl genrsa \
+    -out $__root/data/ssl/$CA_NAME.key 2048
+
+    openssl req \
+    -new \
+    -key $__root/data/ssl/$CA_NAME.key \
+    -out $__root/data/ssl/$CA_NAME.csr \
+    -config <( echo "$CONFIG" )
+
+    openssl x509 \
+    -req \
+    -passin pass:$ROOT_CA_PASSWORD \
+    -in $__root/data/ssl/$CA_NAME.csr \
+    -CA $__root/data/ssl/rootCA.pem \
+    -CAkey $__root/data/ssl/rootCA.key \
+    -CAcreateserial \
+    -out $__root/data/ssl/$CA_NAME.crt \
+    -days 3650 \
+    -sha256 \
+    -extfile <( echo "$EXTFILE" )
+
+    rm $__root/data/ssl/$CA_NAME.csr
+}

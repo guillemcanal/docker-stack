@@ -5,7 +5,7 @@ network_initialize() {
 }
 
 network_before_enable() {
-    echo
+    echo ""
 }
 
 network_enable() {
@@ -24,8 +24,12 @@ network_local_ip() {
     _not_implemented
 }
 
+network_add_root_ca() {
+    _not_implemented
+}
+
 _not_implemented() {
-    echo "\"$__cmd\" is not yet implemented on osx. abording"
+    echo "[error] \"$__cmd\" is not yet implemented on osx. abording"
     exit 1
 }
 
@@ -45,6 +49,6 @@ _get_active_connection() {
         fi
     done <<< "$(echo "$services")"
     
-    echo "no active connection found, abording."
+    echo "[error] no active connection found, abording."
     exit 1
 }

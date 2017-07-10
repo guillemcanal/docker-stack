@@ -39,7 +39,7 @@ services:
     image: consul
     container_name: consul
     volumes:
-      - "./certs:/etc/traefik/ssl"
+      - "./data:/data:ro"
     ports:
       - "8500:8500"
 

@@ -1,0 +1,222 @@
+[
+	{
+		"key": "traefik/accesslogsfile",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/checknewversion",
+		"flags": 3304740253564472344,
+		"value": "dHJ1ZQ=="
+	},
+	{
+		"key": "traefik/consul/",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/consul/endpoint",
+		"flags": 3304740253564472344,
+		"value": "Y29uc3VsOjg1MDA="
+	},
+	{
+		"key": "traefik/consul/filename",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/consul/password",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/consul/prefix",
+		"flags": 3304740253564472344,
+		"value": "dHJhZWZpaw=="
+	},
+	{
+		"key": "traefik/consul/username",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/consul/watch",
+		"flags": 3304740253564472344,
+		"value": "dHJ1ZQ=="
+	},
+	{
+		"key": "traefik/debug",
+		"flags": 3304740253564472344,
+		"value": "ZmFsc2U="
+	},
+	{
+		"key": "traefik/defaultentrypoints/0",
+		"flags": 3304740253564472344,
+		"value": "aHR0cA=="
+	},
+	{
+		"key": "traefik/defaultentrypoints/1",
+		"flags": 3304740253564472344,
+		"value": "aHR0cHM="
+	},
+	{
+		"key": "traefik/docker/",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/docker/domain",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/docker/endpoint",
+		"flags": 3304740253564472344,
+		"value": "dW5peDovLy92YXIvcnVuL2RvY2tlci5zb2Nr"
+	},
+	{
+		"key": "traefik/docker/exposedbydefault",
+		"flags": 3304740253564472344,
+		"value": "ZmFsc2U="
+	},
+	{
+		"key": "traefik/docker/filename",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/docker/swarmmode",
+		"flags": 3304740253564472344,
+		"value": "ZmFsc2U="
+	},
+	{
+		"key": "traefik/docker/usebindportip",
+		"flags": 3304740253564472344,
+		"value": "ZmFsc2U="
+	},
+	{
+		"key": "traefik/docker/watch",
+		"flags": 3304740253564472344,
+		"value": "dHJ1ZQ=="
+	},
+	{
+		"key": "traefik/entrypoints/http/",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/entrypoints/http/address",
+		"flags": 3304740253564472344,
+		"value": "Ojgw"
+	},
+	{
+		"key": "traefik/entrypoints/http/compress",
+		"flags": 3304740253564472344,
+		"value": "ZmFsc2U="
+	},
+	{
+		"key": "traefik/entrypoints/http/network",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/entrypoints/https/",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/entrypoints/https/address",
+		"flags": 3304740253564472344,
+		"value": "OjQ0Mw=="
+	},
+	{
+		"key": "traefik/entrypoints/https/compress",
+		"flags": 3304740253564472344,
+		"value": "ZmFsc2U="
+	},
+	{
+		"key": "traefik/entrypoints/https/network",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/gracetimeout",
+		"flags": 3304740253564472344,
+		"value": "MTAwMDAwMDAwMDA="
+	},
+	{
+		"key": "traefik/healthcheck/",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/healthcheck/interval",
+		"flags": 3304740253564472344,
+		"value": "MzAwMDAwMDAwMDA="
+	},
+	{
+		"key": "traefik/idletimeout",
+		"flags": 3304740253564472344,
+		"value": "MTgwMDAwMDAwMDAw"
+	},
+	{
+		"key": "traefik/insecureskipverify",
+		"flags": 3304740253564472344,
+		"value": "ZmFsc2U="
+	},
+	{
+		"key": "traefik/leader",
+		"flags": 3304740253564472344,
+		"value": "MTBlOTRlNWUtYjNmMC00NGE3LThiOTctMzY0NzY4Mjg5MWJi"
+	},
+	{
+		"key": "traefik/loglevel",
+		"flags": 3304740253564472344,
+		"value": "REVCVUc="
+	},
+	{
+		"key": "traefik/maxidleconnsperhost",
+		"flags": 3304740253564472344,
+		"value": "MjAw"
+	},
+	{
+		"key": "traefik/providersthrottleduration",
+		"flags": 3304740253564472344,
+		"value": "MjAwMDAwMDAwMA=="
+	},
+	{
+		"key": "traefik/traefiklogsfile",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/web/",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/web/address",
+		"flags": 3304740253564472344,
+		"value": "OjgwODA="
+	},
+	{
+		"key": "traefik/web/certfile",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/web/keyfile",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/web/path",
+		"flags": 3304740253564472344,
+		"value": ""
+	},
+	{
+		"key": "traefik/web/readonly",
+		"flags": 3304740253564472344,
+		"value": "ZmFsc2U="
+	}
+]

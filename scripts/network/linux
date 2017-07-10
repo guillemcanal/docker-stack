@@ -36,6 +36,22 @@ network_local_ip() {
     ip route get 8.8.8.8 | head -1 | cut -d' ' -f8
 }
 
+network_add_root_ca() {
+    if [ ! -f "$__root/data/ssl/rootCA.pem" ];then
+        echo "[error] generate a root certificate first, abording"
+        exit 1
+    fi
+
+    if [ ! -f "/usr/local/share/ca-certificates/docker-stack-root-ca.crt" ];then
+        echo "---> adding the root certificate in your trusted root certificates"
+        sudo cp $__root/data/ssl/rootCA.pem /usr/local/share/ca-certificates/docker-stack-root-ca.crt
+        sudo update-ca-certificates --fresh
+        
+        echo "[warn] register the root certificate $__root/data/ssl/rootCA.pem in your browser"
+        read -rsp $'Press any key to continue...\n' -n1 key
+    fi
+}
+
 _enable_system_dnsmasq() {
     sudo sed -i 's/^#dns=dnsmasq/dns=dnsmasq/' /etc/NetworkManager/NetworkManager.conf
     sudo service network-manager restart

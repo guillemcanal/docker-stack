@@ -3,6 +3,7 @@
 set -o pipefail
 
 export __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export __root="$(dirname $__dir)"
 export __cmd=$1
 
 # load network functions for a given operating system
@@ -26,14 +27,16 @@ usage() {
     echo "before-enable   before enabling the stack"
     echo "enable          Enable local DNS"
     echo "disable         Disable local DNS"
+    echo "install-ca      Install root certificate"
 }
 
 main() {
     bootstrap
     case $__cmd in
-        'before-enable')    network_before_enable ;;
-        'enable')           network_enable ;;
-        'disable')          network_disable ;;
+        'network:before')       network_before_enable ;;
+        'network:enable')       network_enable ;;
+        'network:disable')      network_disable ;;
+        'network:install-ca')   network_add_root_ca ;;
         *)                  usage ;;
     esac
 }
