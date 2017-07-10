@@ -1,7 +1,8 @@
 version: '2'
+
 services:
   traefik:
-    image: traefik:v1.3.2
+    image: traefik:v1.3.3
     container_name: traefik
     restart: unless-stopped
     command: --consul --consul.endpoint=consul:8500
@@ -18,9 +19,11 @@ services:
         max-size: 50m
   
   dnsmasq:
-    image: lagardere/dnsmasq
+    build:
+      context: .
+      dockerfile: Dockerfile-dnsmasq
     container_name: dnsmasq
-    restart: always
+    restart: unless-stopped
     cap_add:
       - NET_ADMIN
     ports:
@@ -39,6 +42,7 @@ services:
       - "./certs:/etc/traefik/ssl"
     ports:
       - "8500:8500"
+
 networks:
   default:
     external:

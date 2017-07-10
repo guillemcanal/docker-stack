@@ -1,0 +1,50 @@
+#!/bin/bash
+
+network_initialize() {
+    SNAME=$(_get_active_connection)
+}
+
+network_before_enable() {
+    echo
+}
+
+network_enable() {
+    # @todo check if local dns is already active
+    # @todo get default DNS address
+    sudo networksetup -setdnsservers $SNAME 127.0.0.1 192.168.1.1
+    sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder
+}
+
+network_disable() {
+    sudo networksetup -setdnsservers $SNAME Empty
+    sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder
+}
+
+network_local_ip() {
+    _not_implemented
+}
+
+_not_implemented() {
+    echo "\"$__cmd\" is not yet implemented on osx. abording"
+    exit 1
+}
+
+_get_active_connection() {
+    services=$(networksetup -listnetworkserviceorder | grep 'Hardware Port')
+
+    while read line; do
+        sname=$(echo $line | awk -F  "(, )|(: )|[)]" '{print $2}')
+        sdev=$(echo $line | awk -F  "(, )|(: )|[)]" '{print $4}')
+
+        if [ -n "$sdev" ]; then
+            ifout=$(ifconfig $sdev 2>&1)
+            if echo "$ifout" | grep "status: active" > /dev/null; then
+                echo "$sname"
+                return
+            fi
+        fi
+    done <<< "$(echo "$services")"
+    
+    echo "no active connection found, abording."
+    exit 1
+}

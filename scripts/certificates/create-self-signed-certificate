@@ -4,7 +4,6 @@ read -p "certificate name ? " CA_NAME
 read -p "CA domain ? " CA_DOMAIN
 read -p "Alternative names ? (separate with a coma) " ALT_NAMES
 
-
 # Process Alternative Names
 DNS_ADDRESSES=""
 ALT_NAMES=$(echo $ALT_NAMES | tr "," "\n")
@@ -13,7 +12,6 @@ for DNS in $ALT_NAMES; do
     DNS_ADDRESSES="${DNS_ADDRESSES}DNS.$INDEX = $DNS\n"
     let INDEX=${INDEX}+1
 done
-
 
 CONFIG=$(cat <<END
 [req]

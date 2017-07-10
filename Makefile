@@ -1,4 +1,4 @@
-.PHONY: help build run clean show
+.PHONY: help build run clean
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -8,14 +8,11 @@ build: ## Build the Lagardere DNS Docker image
 
 run: ## Start Traefik and your local DNS
 	@docker network create traefik 2> /dev/null | true;
-	@scripts/dns-switch before-enable
+	@scripts/main before-enable
 	@docker-compose up -d
-	@scripts/dns-switch enable
+	@scripts/main enable
 
 clean: ## Remove Traefik and your local DNS
 	@docker-compose down 2> /dev/null | true;
-	@scripts/dns-switch disable
+	@scripts/main disable
 	@docker network rm traefik 2> /dev/null | true;
-
-show: ## Show Network Interface Informations
-	@scripts/dns-switch show

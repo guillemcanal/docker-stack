@@ -1,0 +1,26 @@
+#!/bin/bash
+
+network_initialize() {
+	_not_implemented
+}
+
+network_before_enable() {
+	_not_implemented
+}
+
+network_enable() {
+	_not_implemented
+}
+
+network_disable() {
+	_not_implemented
+}
+
+network_local_ip() {
+    _not_implemented
+}
+
+_not_implemented() {
+	echo "\"$__cmd\" is not yet implemented on windows. abording"
+	exit 1
+}
