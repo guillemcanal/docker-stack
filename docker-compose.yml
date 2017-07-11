@@ -38,11 +38,25 @@ services:
   consul:
     image: consul
     container_name: consul
+    restart: unless-stopped
     volumes:
       - "./data:/data:ro"
       - "./scripts/kvstore/kvstore:/usr/bin/kvstore:ro"
     ports:
       - "8500:8500"
+
+  watcher:
+    build:
+      context: .
+      dockerfile: Dockerfile-watcher
+    container_name: watcher
+    restart: unless-stopped
+    environment:
+      - ROOT_CA_PASSWORD=secret
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./scripts:/scripts:ro"
+      - "./data:/data"
 
 networks:
   default:

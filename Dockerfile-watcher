@@ -1,0 +1,9 @@
+FROM alpine:3.6
+
+RUN apk -U add curl bash openssl \
+  	&& curl -L https://get.docker.com/builds/Linux/x86_64/docker-latest > /usr/bin/docker \
+  	&& chmod +x /usr/bin/docker \
+  	&& apk del curl \
+  	&& rm -rf /var/cache/apk/*
+
+CMD /scripts/ssl/watcher

@@ -9,14 +9,14 @@ source $__dir/create-root-ca
 source $__dir/create-self-signed-certificate
 
 watcher_initialize() {
-    docker-compose exec consul kvstore initialize
+    docker exec -ti consul kvstore initialize
 }
 
 watcher_refresh_certificates() {
-    docker-compose exec consul kvstore refresh-certificates
+    docker exec -ti consul kvstore refresh-certificates
 
     echo " ---> restart traefik"
-    docker-compose restart traefik 2> /dev/null
+    docker restart traefik 2> /dev/null
 }
 
 generate_root_certificate
