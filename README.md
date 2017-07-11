@@ -30,6 +30,10 @@ You should be able to access:
 - A Local DNS Web UI on <http://127.0.0.1:8053>
 - A Key/Value store Web UI on <http://127.0.0.1:8500>
 
+### For Windows users
+
+Please read [this (in french)](docs/windows.md)
+
 ## Test your stack
 
 There is a `docker-compose.yml` example located 
@@ -57,7 +61,5 @@ All you need to do is to add the following labels (see `./example/docker-compose
 
 - `ssl.domain`: The main domain for your Docker container (ex: `dev.company.fr`)
 - `ssl.domain.alt_names` : A coma separated list of alternatives domains names for your Docker containers (ex: `dev.company.fr,dev.admin.company.fr`)
-
-
 
 
