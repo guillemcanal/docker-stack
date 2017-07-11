@@ -3,7 +3,6 @@
 set -e pipefail
 
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-__root="$(dirname $(dirname $__dir))"
 
 source $__dir/create-root-ca
 source $__dir/create-self-signed-certificate
@@ -25,6 +24,8 @@ watcher_refresh_certificates
 
 # listen to started containers
 echo "[info] listen for started containers"
+
+# @todo find a way to handle SIGTERM
 docker events --filter 'event=start' | while read event
 do
     CONTAINER_ID=$(echo $event | awk '{ print $4 }')
