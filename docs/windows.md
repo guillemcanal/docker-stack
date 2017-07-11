@@ -7,8 +7,8 @@ Vous devez faire ces opérations manuellement.
 
 ## Lancer `docker-compose`
 
-````bash
-`docker-compose up -d
+```bash
+docker-compose up -d
 ```
 
 ## Ajouter le certificat racine
@@ -47,6 +47,6 @@ Vous devez faire ces opérations manuellement.
 ## Test
 
 1. Ouvrir un navigateur et vérifier qu'il est toujours possible de naviguer sur Internet.
-2. Dans le projet aller dans le répertoire ``./examples` et lancer `docker-compose up -d`
+2. Dans le projet aller dans le répertoire `./examples` et lancer `docker-compose up -d`
 3. Dans le navigateur <http://dev.domain.fr> doit être accéssible
 4. L'accès en HTTPS doit également fonctionner <https://dev.domain.fr>
