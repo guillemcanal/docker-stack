@@ -1,19 +1,19 @@
 #!/bin/bash
 
 network_initialize() {
-	_not_implemented
+    _not_implemented
 }
 
 network_before_enable() {
-	_not_implemented
+    _not_implemented
 }
 
 network_enable() {
-	_not_implemented
+    _not_implemented
 }
 
 network_disable() {
-	_not_implemented
+    _not_implemented
 }
 
 network_local_ip() {
@@ -25,6 +25,6 @@ network_add_root_ca() {
 }
 
 _not_implemented() {
-	echo "[error] \"$__cmd\" is not yet implemented on windows"
-	echo " ---> please read the windows documentation provided with this project"
+    echo "[warn] \"$__cmd\" is not yet implemented on windows"
+    echo " ---> please read the windows documentation provided with this project"
 }
