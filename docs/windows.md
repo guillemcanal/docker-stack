@@ -3,7 +3,7 @@
 Pour le moment, la stack Docker n'est pas automatisée pour Windows.
 Vous devez faire ces opérations manuellement.
 
-> **Note** : Tester sur Windows 10
+> **Note** : Tester sur Windows 10 et [Docker for Windows](https://docs.docker.com/docker-for-windows/)
 
 ## Lancer `docker-compose`
 
