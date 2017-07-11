@@ -1,7 +1,6 @@
 #!/bin/bash
 
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-__root="$(dirname $(dirname $__dir))"
+set -e pipefail
 
 generate_root_certificate() {
     echo "[info] generate the root certificate"
@@ -16,25 +15,24 @@ generate_root_certificate() {
     [ -z "$ROOT_CA_PASSWORD" ] && { echo "[error] need to set the ROOT_CA_PASSWORD environment variable, abording"; exit 1; }
 
     echo " ---> create ssl dir"
-    mkdir -p $__root/data/ssl
+    mkdir -p /data/ssl
 
     echo " ---> create the root certificate key"
     openssl genrsa \
     -des3 \
     -passout pass:$ROOT_CA_PASSWORD \
-    -out $__root/data/ssl/rootCA.key 2048 > /dev/null
+    -out /data/ssl/rootCA.key 2048
 
     echo " ---> create the root certificate"
     openssl req \
     -x509 \
     -new \
     -nodes \
-    -key $__root/data/ssl/rootCA.key \
+    -key /data/ssl/rootCA.key \
     -passin pass:$ROOT_CA_PASSWORD \
     -sha256 \
     -days 3650 \
     -subj "/C=FR/ST=Paris/L=Paris/O=Lagardere/OU=IT Department/CN=lagardere-active.com" \
-    -out $__root/data/ssl/rootCA.pem > /dev/null
+    -out /data/ssl/rootCA.pem
 }
-
 

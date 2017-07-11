@@ -14,7 +14,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     logging:
       options:
-        max-size: 50m
+        max-size: 1m
   
   dnsmasq:
     build:
@@ -33,7 +33,7 @@ services:
       - ./dnsmasq.conf:/etc/dnsmasq.conf
     logging:
       options:
-        max-size: 50m
+        max-size: 1m
   
   consul:
     image: consul
@@ -44,6 +44,9 @@ services:
       - "./scripts/kvstore/kvstore:/usr/bin/kvstore:ro"
     ports:
       - "8500:8500"
+    logging:
+      options:
+        max-size: 1m
 
   watcher:
     build:
@@ -57,7 +60,9 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./scripts:/scripts:ro"
       - "./data:/data"
-
+    logging:
+      options:
+        max-size: 1m
 networks:
   default:
     external:

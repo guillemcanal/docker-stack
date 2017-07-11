@@ -1,19 +1,30 @@
-# This docker-compose show how to use Traefik on your machine
-# It will expose a demo container at dev.demo.europe1.fr
+# This docker-compose show how to use Traefik  on your machine
 version: '2'
 services:
-  demo:
+  web:
     image: "emilevauge/whoami"
+    container_name: traefik-demo
+    # This container should use the "traefik" and the "default" network
     networks:
       - "traefik"
       - "default"
     labels:
-      - "ssl.domain=dev.www.google.com"
-      - "ssl.domain.alt_names=dev.www.google.com,dev.cdn.cacaprout.com"
+      # Generate an SSL certificate for dev.www.new2.europe1.fr
+      - "ssl.domain=dev.domain.fr"
+      # The certificate must support aletrnative domains (separated with a coma)
+      # Note: The list MUSt include the domain specified in "ssl.domain"
+      - "ssl.domain.alt_names=dev.domain.fr,dev.www.domain.fr,dev.admin.domain.fr,dev.api.domain.fr,dev.dom.fr,dev.cdn.domain.fr"
+      # Use the traefik network
       - "traefik.docker.network=traefik"
+      # This container should be exposed
       - "traefik.enable=true"
-      - "traefik.backend=cacaprout"
-      - "traefik.frontend.rule=HostRegexp: {subdomain:[a-z.]+}.google.com"
+      # The backend should be named domain (used mainly for load balancing)
+      - "traefik.backend=domain"
+      # Those host regexes must point to that container
+      # Note: For simple use cases use "Host:" instead of "HostRegexp" (ex: traefik.frontend.rule=Host: dev.domain.fr)
+      - "traefik.frontend.rule=HostRegexp: {subdomain:[a-z0-9.-]+}.domain.fr, dev.dom.fr"
+
+# Rely on an external network called "traefik"
 networks:
   traefik:
     external: true

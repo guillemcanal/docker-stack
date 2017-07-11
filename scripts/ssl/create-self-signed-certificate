@@ -1,7 +1,4 @@
-#!/usr/bin/env bash
-
-__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-__root="$(dirname $(dirname $__dir))"
+#!/bin/bash
 
 create_self_signed_certificate() {
 
@@ -15,6 +12,8 @@ create_self_signed_certificate() {
 
     # alternative domain names (ex: *.mydomain.fr, *.www.mydomain.fr)
     ALT_NAMES=$3
+
+
 
     # process Alternative Names
     DNS_ADDRESSES=""
@@ -54,31 +53,35 @@ END
 );
     EXTFILE=$(echo "$EXTFILE"; echo -e $DNS_ADDRESSES)
 
+
     echo "[info] generate server certificate"
     
     echo " ---> generate server key"
     openssl genrsa \
-    -out $__root/data/ssl/$CA_NAME.key 2048  2> /dev/null
+    -out /data/ssl/$CA_NAME.key 2048
 
     echo " ---> generate server signing request"
     openssl req \
     -new \
-    -key $__root/data/ssl/$CA_NAME.key \
-    -out $__root/data/ssl/$CA_NAME.csr \
-    -config <( echo "$CONFIG" )  2> /dev/null
+    -key /data/ssl/$CA_NAME.key \
+    -out /data/ssl/$CA_NAME.csr \
+    -config <( echo "$CONFIG" )
 
     echo " ---> generate server certificate"
     openssl x509 \
     -req \
     -passin pass:$ROOT_CA_PASSWORD \
-    -in $__root/data/ssl/$CA_NAME.csr \
-    -CA $__root/data/ssl/rootCA.pem \
-    -CAkey $__root/data/ssl/rootCA.key \
+    -in /data/ssl/$CA_NAME.csr \
+    -CA /data/ssl/rootCA.pem \
+    -CAkey /data/ssl/rootCA.key \
     -CAcreateserial \
-    -out $__root/data/ssl/$CA_NAME.crt \
+    -out /data/ssl/$CA_NAME.crt \
     -days 3650 \
     -sha256 \
-    -extfile <( echo "$EXTFILE" )  2> /dev/null
+    -extfile <( echo "$EXTFILE" )
 
-    rm $__root/data/ssl/$CA_NAME.csr
+    rm /data/ssl/$CA_NAME.csr
 }
+
+
+
