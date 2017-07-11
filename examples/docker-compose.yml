@@ -8,10 +8,12 @@ services:
       - "traefik"
       - "default"
     labels:
+      - "ssl.domain=dev.www.google.com"
+      - "ssl.domain.alt_names=dev.www.google.com,dev.cdn.cacaprout.com"
       - "traefik.docker.network=traefik"
       - "traefik.enable=true"
-      - "traefik.backend=demo"
-      - "traefik.frontend.rule=Host: dev.demo.europe1.fr"
+      - "traefik.backend=cacaprout"
+      - "traefik.frontend.rule=HostRegexp: {subdomain:[a-z.]+}.google.com"
 networks:
   traefik:
     external: true

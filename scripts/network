@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -o pipefail
+
+export __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export __root="$(dirname $__dir)"
+export __cmd=$1
+
+# load network functions for a given operating system
+bootstrap() {
+    case "$OSTYPE" in
+        darwin*)    source "$__dir/network-os/osx" ;; 
+        linux*)     source "$__dir/network-os/linux" ;;
+        msys*)      source "$__dir/network-os/windows" ;;
+        cygwin*)    source "$__dir/network-os/windows" ;;
+        *)          echo "$OSTYPE is not a supported operating system, abording"; exit 1 ;;
+    esac
+
+    network_initialize
+}
+
+usage() {
+    echo
+    echo "Usage: network COMMAND"
+    echo
+    echo "Commands:"
+    echo "  before          before enabling the stack"
+    echo "  enable          enable local DNS"
+    echo "  disable         disable local DNS"
+    echo "  install-ca      install root certificate"
+    echo
+
+    exit 2
+}
+
+main() {
+    bootstrap
+    case $__cmd in
+        'before')       network_before_enable ;;
+        'enable')       network_enable ;;
+        'disable')      network_disable ;;
+        'install-ca')   network_add_root_ca ;;
+        *)              usage ;;
+    esac
+}
+
+main $1
+

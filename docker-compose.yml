@@ -24,6 +24,7 @@ services:
       dockerfile: Dockerfile-dnsmasq
     container_name: dnsmasq
     restart: unless-stopped
+    privileged: true
     cap_add:
       - NET_ADMIN
     ports:
@@ -35,11 +36,13 @@ services:
     logging:
       options:
         max-size: 50m
+  
   consul:
     image: consul
     container_name: consul
     volumes:
       - "./data:/data:ro"
+      - "./scripts/kvstore/kvstore:/usr/bin/kvstore:ro"
     ports:
       - "8500:8500"
 

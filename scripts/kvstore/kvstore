@@ -1,0 +1,65 @@
+#!/bin/ash
+
+set -o pipefail
+
+initialize() {
+    echo "[info] initializing..."
+    if [ -f "/initialized" ];then
+        echo " ---> kvstore already initialized"
+        return
+    fi
+
+    _check_kvstore
+    echo " ---> initialize traefik config"
+    consul kv delete -recurse traefik/ > /dev/null
+    consul kv import @/data/kvstore/traefik.json > /dev/null
+    
+    touch /initialized
+}
+
+refresh_certificates() {
+    echo "[info] refresh certificates"
+    _check_kvstore
+    consul kv delete -recurse traefik/entrypoints/https/tls/ > /dev/null
+    
+    local index=0
+    for f in /data/ssl/*.crt;do
+        if [ -f "$f" ];then
+            local name=$(basename "$f" .crt)
+            echo " ---> add \"$name\" certificate and key"
+            consul kv put traefik/entrypoints/https/tls/certificates/$index/container $name > /dev/null
+            consul kv put traefik/entrypoints/https/tls/certificates/$index/certfile @/data/ssl/$name.crt > /dev/null
+            consul kv put traefik/entrypoints/https/tls/certificates/$index/keyfile @/data/ssl/$name.key > /dev/null
+            let index=${index}+1
+        fi
+    done
+}
+
+usage() {
+    echo
+    echo "Usage: kvstore COMMAND"
+    echo
+    echo "Commands:"
+    echo "  initialize            load traefik configuration"
+    echo "  refresh-certificates  refresh certificates into the kvstore"
+    echo
+
+    exit 2
+}
+
+_check_kvstore() {
+    if ! [ -x "$(command -v consul)" ];then
+        echo "consul is required but it's not installed, aborting."
+        exit 1
+    fi
+}
+
+main() {
+    case $1 in
+        'initialize')           initialize ;;
+        'refresh-certificates') refresh_certificates ;;
+        *)                      usage ;;
+    esac
+}
+
+main $1

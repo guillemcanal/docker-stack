@@ -6,7 +6,7 @@ network_initialize() {
     hash ip 2>/dev/null || { echo >&2 "ip is required but it's not installed, aborting."; exit 1; }
     
     if [ ! -f /etc/NetworkManager/NetworkManager.conf ]; then
-        echo "cannot find NetworkManager.conf, abording."; exit 1
+        echo "[error] cannot find NetworkManager.conf, abording."; exit 1
     fi
 
     # get the default interface name
@@ -43,12 +43,12 @@ network_add_root_ca() {
     fi
 
     if [ ! -f "/usr/local/share/ca-certificates/docker-stack-root-ca.crt" ];then
-        echo "---> adding the root certificate in your trusted root certificates"
+        echo " ---> adding the root certificate in your trusted root certificates"
         sudo cp $__root/data/ssl/rootCA.pem /usr/local/share/ca-certificates/docker-stack-root-ca.crt
         sudo update-ca-certificates --fresh
         
         echo "[warn] register the root certificate $__root/data/ssl/rootCA.pem in your browser"
-        read -rsp $'Press any key to continue...\n' -n1 key
+        read -rsp $' ---> press any key to continue...\n' -n1 key
     fi
 }
 

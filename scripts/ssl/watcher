@@ -1,59 +1,44 @@
 #!/bin/bash 
 
+set -e pipefail
+
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __root="$(dirname $(dirname $__dir))"
 
+source $__dir/create-root-ca
 source $__dir/create-self-signed-certificate
 
-load_kvstore_config() {
-    echo "[info] add traefik config into consul"
-    docker-compose exec consul consul kv delete -recurse traefik/ > /dev/null
-    docker-compose exec consul consul kv import @/data/consul/traefik.json > /dev/null
+watcher_initialize() {
+    docker-compose exec consul kvstore initialize
 }
 
-refresh_traefik_tls_config() {
-    echo "[info] load certificates into consul"
+watcher_refresh_certificates() {
+    docker-compose exec consul kvstore refresh-certificates
 
-    echo "---> clear consul TLS config"
-    docker-compose exec consul consul kv delete -recurse traefik/entrypoints/https/tls/ > /dev/null
-    
-    # add certificates and their keys to consul
-    local index=0
-    for f in $__root/data/ssl/*.crt;do
-        if [ -f "$f" ];then
-            local name=$(basename "$f" .crt)
-            echo "---> add $name certificate and key"
-            docker-compose exec consul consul kv put traefik/entrypoints/https/tls/certificates/$index/container $name > /dev/null
-            docker-compose exec consul consul kv put traefik/entrypoints/https/tls/certificates/$index/certfile @/data/ssl/$name.crt > /dev/null
-            docker-compose exec consul consul kv put traefik/entrypoints/https/tls/certificates/$index/keyfile @/data/ssl/$name.key > /dev/null
-            let index=${index}+1
-        fi
-    done
-    
-    # restart traefik
-    echo "---> restart traefik"
+    echo " ---> restart traefik"
     docker-compose restart traefik 2> /dev/null
 }
 
-load_kvstore_config
-refresh_traefik_tls_config
+generate_root_certificate
+watcher_initialize
+watcher_refresh_certificates
 
 # listen to started containers
+echo "[info] listen for started containers"
 docker events --filter 'event=start' | while read event
 do
     CONTAINER_ID=$(echo $event | awk '{ print $4 }')
     CONTAINER_NAME="$(docker inspect --format='{{ .Name }}' $CONTAINER_ID | cut -c 2-)"
     SSL_DOMAIN=$(docker inspect --format='{{ index .Config.Labels "ssl.domain" }}' $CONTAINER_ID)
-    SSL_DOMAIN_ALT_NAMES=$(docker inspect --format='{{ index .Config.Labels "ssl.alt_names" }}' $CONTAINER_ID)
+    SSL_DOMAIN_ALT_NAMES=$(docker inspect --format='{{ index .Config.Labels "ssl.domain.alt_names" }}' $CONTAINER_ID)
 
     if [ -n "$SSL_DOMAIN" ];then
-        # if no alternate alt name if provided, assume ssl domain
+        # if no domain alternate name if provided, assume ssl domain
         if [ ! -n "SSL_DOMAIN_ALT_NAMES" ];then
             SSL_DOMAIN_ALT_NAMES=$SSL_DOMAIN
         fi
 
         create_self_signed_certificate "$CONTAINER_NAME" "$SSL_DOMAIN" "$SSL_DOMAIN_ALT_NAMES"
-        
-        refresh_traefik_tls_config
+        watcher_refresh_certificates
     fi
 done

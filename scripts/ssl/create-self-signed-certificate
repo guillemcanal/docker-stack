@@ -3,8 +3,6 @@
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __root="$(dirname $(dirname $__dir))"
 
-echo $__root
-
 create_self_signed_certificate() {
 
     [ -z "$ROOT_CA_PASSWORD" ] && { echo "[error] you need to set the ROOT_CA_PASSWORD environment variable, abording"; exit 1; }
@@ -54,18 +52,22 @@ subjectAltName = @alt_names
 [alt_names]
 END
 );
-
     EXTFILE=$(echo "$EXTFILE"; echo -e $DNS_ADDRESSES)
 
+    echo "[info] generate server certificate"
+    
+    echo " ---> generate server key"
     openssl genrsa \
-    -out $__root/data/ssl/$CA_NAME.key 2048
+    -out $__root/data/ssl/$CA_NAME.key 2048  2> /dev/null
 
+    echo " ---> generate server signing request"
     openssl req \
     -new \
     -key $__root/data/ssl/$CA_NAME.key \
     -out $__root/data/ssl/$CA_NAME.csr \
-    -config <( echo "$CONFIG" )
+    -config <( echo "$CONFIG" )  2> /dev/null
 
+    echo " ---> generate server certificate"
     openssl x509 \
     -req \
     -passin pass:$ROOT_CA_PASSWORD \
@@ -76,7 +78,7 @@ END
     -out $__root/data/ssl/$CA_NAME.crt \
     -days 3650 \
     -sha256 \
-    -extfile <( echo "$EXTFILE" )
+    -extfile <( echo "$EXTFILE" )  2> /dev/null
 
     rm $__root/data/ssl/$CA_NAME.csr
 }

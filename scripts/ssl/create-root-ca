@@ -3,29 +3,38 @@
 __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __root="$(dirname $(dirname $__dir))"
 
-echo "[info] generate the root certificate"
+generate_root_certificate() {
+    echo "[info] generate the root certificate"
 
-# check requirements
-hash openssl 2>/dev/null || { echo >&2 "[eroor] openssl need to be installed, aborting."; exit 1; }
-[ -z "$ROOT_CA_PASSWORD" ] && { echo "[error] need to set the ROOT_CA_PASSWORD environment variable, abording"; exit 1; }
+    if [ -f "$__root/data/ssl/rootCA.pem" ];then
+        echo " ---> the root certificate already exist, skipping"
+        return
+    fi
 
-echo "---> create ssl dir"
-mkdir -p $__root/data/ssl
+    # check requirements
+    hash openssl 2>/dev/null || { echo >&2 "[eroor] openssl need to be installed, aborting."; exit 1; }
+    [ -z "$ROOT_CA_PASSWORD" ] && { echo "[error] need to set the ROOT_CA_PASSWORD environment variable, abording"; exit 1; }
 
-echo "---> create the root certificate key"
-openssl genrsa \
--des3 \
--passout pass:$ROOT_CA_PASSWORD \
--out $__root/data/ssl/rootCA.key 2048
+    echo " ---> create ssl dir"
+    mkdir -p $__root/data/ssl
 
-echo "---> create the root certificate"
-openssl req \
--x509 \
--new \
--nodes \
--key $__root/data/ssl/rootCA.key \
--passin pass:$ROOT_CA_PASSWORD \
--sha256 \
--days 3650 \
--subj "/C=FR/ST=Paris/L=Paris/O=Lagardere/OU=IT Department/CN=lagardere-active.com" \
--out $__root/data/ssl/rootCA.pem
+    echo " ---> create the root certificate key"
+    openssl genrsa \
+    -des3 \
+    -passout pass:$ROOT_CA_PASSWORD \
+    -out $__root/data/ssl/rootCA.key 2048 > /dev/null
+
+    echo " ---> create the root certificate"
+    openssl req \
+    -x509 \
+    -new \
+    -nodes \
+    -key $__root/data/ssl/rootCA.key \
+    -passin pass:$ROOT_CA_PASSWORD \
+    -sha256 \
+    -days 3650 \
+    -subj "/C=FR/ST=Paris/L=Paris/O=Lagardere/OU=IT Department/CN=lagardere-active.com" \
+    -out $__root/data/ssl/rootCA.pem > /dev/null
+}
+
+

@@ -1,9 +1,0 @@
-FROM node:alpine
-
-
-
-COPY ./watcher /app
-
-RUN apk --no-cache add openssl && chown -R node:node /app
-
-CMD ["node", "index.js"]

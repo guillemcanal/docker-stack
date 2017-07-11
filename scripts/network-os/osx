@@ -1,23 +1,28 @@
 #!/bin/bash
 
+set -e pipefail
+
 network_initialize() {
     SNAME=$(_get_active_connection)
 }
 
 network_before_enable() {
-    echo ""
+    # nothing to do
+    return
 }
 
 network_enable() {
     # @todo check if local dns is already active
     # @todo get default DNS address
+    echo " ---> replace DNS servers"
     sudo networksetup -setdnsservers $SNAME 127.0.0.1 192.168.1.1
-    sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder
+    _flush_dns_cache
 }
 
 network_disable() {
+    echo " ---> default DNS servers"
     sudo networksetup -setdnsservers $SNAME Empty
-    sudo dscacheutil -flushcache;sudo killall -HUP mDNSResponder
+    _flush_dns_cache
 }
 
 network_local_ip() {
@@ -31,6 +36,13 @@ network_add_root_ca() {
 _not_implemented() {
     echo "[error] \"$__cmd\" is not yet implemented on osx. abording"
     exit 1
+}
+
+_flush_dns_cache() {
+    echo " ---> flush cache"
+    sudo killall -HUP mDNSResponder
+    #sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
+    #sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
 }
 
 _get_active_connection() {
