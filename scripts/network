@@ -1,12 +1,11 @@
 #!/bin/bash
 
-set -o pipefail
+set -oe pipefail
 
 export __dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export __root="$(dirname $__dir)"
 export __cmd=$1
 
-# load network functions for a given operating system
 bootstrap() {
     case "$OSTYPE" in
         darwin*)    source "$__dir/network-os/osx" ;; 
@@ -17,6 +16,28 @@ bootstrap() {
     esac
 
     network_initialize
+}
+
+load_env_file() {
+    if [ -f "$__root/.env" ];then
+        source "$__root/.env"
+    else
+        source "$__root/.env.dist"
+    fi
+}
+
+dnsmasq_config() {
+    export DNSMASQ_DNS=$(network_local_dns)
+    export DNSMASQ_LOCAL_DOMAIN=${DNSMASQ_LOCAL_DOMAIN:-".dev"}
+    export DNSMASQ_LOCAL_IP=$(network_local_ip)
+
+    if [ "$DNSMASQ_DNS" == "127.0.0.1" ];then
+        echo "[warn] Local DNS is already in place, skipping"
+        return
+    fi
+    
+    # Do not generate the file if it already exist
+    echo -e "$(expand_variables $__root/dnsmasq.conf.tpl)" > $__root/dnsmasq.conf
 }
 
 usage() {
@@ -33,15 +54,43 @@ usage() {
     exit 2
 }
 
+_before_enable() {
+    network_before_enable
+    load_env_file
+    dnsmasq_config
+}
+
+_enable() {
+    if [ docker top traefik 2> /dev/null ]; then
+        echo >&2 "[error] Your Docker Stack is already running, abording"
+        exit 1
+    fi
+    network_enable
+}
+
+_disable() {
+    network_disable
+    rm -f "$__root/dnsmasq.conf"
+}
+
+_add_root_ca() {
+    network_add_root_ca
+}
+
 main() {
     bootstrap
     case $__cmd in
-        'before')       network_before_enable ;;
-        'enable')       network_enable ;;
-        'disable')      network_disable ;;
-        'install-ca')   network_add_root_ca ;;
+        'before')       _before_enable ;;
+        'enable')       _enable ;;
+        'disable')      _disable ;;
+        'install-ca')   _add_root_ca ;;
         *)              usage ;;
     esac
+}
+
+# Expand bash variables from a file
+expand_variables() {
+    eval "cat <<EOF"$'\n'"$(cat "$1")"$'\n'"EOF"
 }
 
 main $1

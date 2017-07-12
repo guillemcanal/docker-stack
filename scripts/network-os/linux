@@ -1,20 +1,28 @@
 #!/bin/bash
 
+set -oe pipefail
+
 network_initialize() {
-    hash nmcli 2>/dev/null || { echo >&2 "nmcli is required but it's not installed, aborting."; exit 1; }
-    
-    hash ip 2>/dev/null || { echo >&2 "ip is required but it's not installed, aborting."; exit 1; }
-    
-    if [ ! -f /etc/NetworkManager/NetworkManager.conf ]; then
-        echo "[error] cannot find NetworkManager.conf, abording."; exit 1
+
+    if ! [ -x "$(command -v nmcli)" ];then
+        echo >&2 "[error] The nmcli cli utility is required but it's not installed, aborting."
+        exit 1
     fi
 
-    # get the default interface name
-    # @todo fail if no default interface is available
-    NIC=$(ip -o -4 route show to default | awk '{print $5}')
-    
-    # get the default interface UUID 
-    UUID=$(nmcli -f UUID,DEVICE connection | grep $NIC | awk '{ print $1 }')
+    if ! [ -x "$(command -v ip)" ];then
+        echo >&2 "[error] The ip cli utility is required but it's not installed, aborting"
+        exit 1
+    fi
+
+    if ! [ -f /etc/NetworkManager/NetworkManager.conf ]; then
+        echo >&2 "[error] Cannot find NetworkManager.conf, abording."; exit 1
+    fi
+
+    INTERFACE_NAME=$(ip -o -4 route show to default | awk '{print $5}')
+    if ! [ -n "$INTERFACE_NAME" ];then
+        echo >&2 "[error] Unable to dertermine your default network interface. Are your connected to the Internet ?"
+        exit 1
+    fi
 }
 
 network_before_enable() {
@@ -22,13 +30,16 @@ network_before_enable() {
 }
 
 network_enable() {
-    nmcli connection modify $UUID ipv4.ignore-auto-dns yes
-    nmcli connection modify $UUID ipv4.dns 127.0.0.1
+    nmcli con mod $INTERFACE_NAME connection.autoconnect yes
+    nmcli con mod $INTERFACE_NAME ipv4.ignore-auto-dns yes
+    nmcli con mod $INTERFACE_NAME ipv4.dns 127.0.0.1
     _restart_interface
 }
 
 network_disable() {
-    nmcli -f ipv4 connection modify $UUID ipv4.ignore-auto-dns no
+    nmcli con mod $INTERFACE_NAME connection.autoconnect yes
+    nmcli con mod $INTERFACE_NAME ipv4.ignore-auto-dns no
+    nmcli con mod $INTERFACE_NAME ipv4.dns ""
     _enable_system_dnsmasq
 }
 
@@ -36,13 +47,18 @@ network_local_ip() {
     ip route get 8.8.8.8 | head -1 | cut -d' ' -f8
 }
 
+network_local_dns() {
+    sleep 5
+    nslookup localhost | head -n1 | awk '{ print $2 }'
+}
+
 network_add_root_ca() {
-    if [ ! -f "$__root/data/ssl/rootCA.pem" ];then
-        echo "[error] generate a root certificate first, abording"
+    if ! [ -f "$__root/data/ssl/rootCA.pem" ];then
+        echo >&2 "[error] generate a root certificate first, abording"
         exit 1
     fi
 
-    if [ ! -f "/usr/local/share/ca-certificates/docker-stack-root-ca.crt" ];then
+    if ! [ -f "/usr/local/share/ca-certificates/docker-stack-root-ca.crt" ];then
         echo " ---> adding the root certificate in your trusted root certificates"
         sudo cp $__root/data/ssl/rootCA.pem /usr/local/share/ca-certificates/docker-stack-root-ca.crt
         sudo update-ca-certificates --fresh
@@ -64,6 +80,6 @@ _disable_system_dnsmasq() {
 }
 
 _restart_interface() {
-    nmcli device disconnect $NIC
-    nmcli device connect $NIC
+    nmcli device disconnect $INTERFACE_NAME
+    nmcli device connect $INTERFACE_NAME
 }

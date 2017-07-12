@@ -22,11 +22,9 @@ services:
       dockerfile: Dockerfile-dnsmasq
     container_name: dnsmasq
     restart: unless-stopped
-    privileged: true
     cap_add:
       - NET_ADMIN
     ports:
-      - "53:53/tcp"
       - "53:53/udp"
       - "8053:8080"
     volumes:
@@ -34,7 +32,6 @@ services:
     logging:
       options:
         max-size: 1m
-  
   consul:
     image: consul
     container_name: consul

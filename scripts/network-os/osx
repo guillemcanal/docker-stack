@@ -26,7 +26,11 @@ network_disable() {
 }
 
 network_local_ip() {
-    _not_implemented
+    ip route get 8.8.8.8 | head -1 | cut -d' ' -f8
+}
+
+network_local_dns() {
+    nslookup localhost | head -n1 | awk '{ print $2 }'
 }
 
 network_add_root_ca() {

@@ -1,30 +1,39 @@
 #!/bin/bash
 
 network_initialize() {
-    _not_implemented
+    _not_implemented_warn
 }
 
 network_before_enable() {
-    _not_implemented
+    _not_implemented_warn
 }
 
 network_enable() {
-    _not_implemented
+    _not_implemented_warn
 }
 
 network_disable() {
-    _not_implemented
+    _not_implemented_warn
 }
 
 network_local_ip() {
-    _not_implemented
+    _not_implemented_error
+}
+
+network_local_dns() {
+    nslookup localhost | head -n1 | awk '{ print $2 }'
 }
 
 network_add_root_ca() {
-    _not_implemented
+    _not_implemented_warn
 }
 
-_not_implemented() {
+_not_implemented_warn() {
     echo "[warn] \"$__cmd\" is not yet implemented on windows"
     echo " ---> please read the windows documentation provided with this project"
+}
+
+_not_implemented_error() {
+    echo >&2 "[error] \"$__cmd\" is not yet implemented on windows"
+    echo >&2 " ---> please read the windows documentation provided with this project"
 }
