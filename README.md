@@ -66,9 +66,9 @@ All you need to do is to add the following labels (see `./example/docker-compose
 
 By default, the local DNS server is configured to resolve every domains starting with `dev.` to your local IP address.
 
-You can change that by modifying the `address` intruction in <http://localhost:8053>
+You can change that by modifying the `address` instruction in <http://localhost:8053>
 
-You can modify the exist `address` instruction or add additionnal addresses.
+You can modify the existing `address` or add additionnal ones.
 
 Examples :
 
