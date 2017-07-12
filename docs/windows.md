@@ -3,7 +3,7 @@
 Pour le moment, la stack Docker n'est pas automatisée pour Windows.
 Vous devez faire ces opérations manuellement.
 
-> **Note** : Tester sur Windows 10 et [Docker for Windows](https://docs.docker.com/docker-for-windows/)
+> **Note** : Tester sur Windows 10
 
 ## Lancer `docker-compose`
 
@@ -33,20 +33,9 @@ docker-compose up -d
 2. Cliquer sur **Paramètre de proxy réseau**
 3. Désactiver **Détecter automatiquement les paramètres**
 
-## Configurer les DNS
-
-1. Aller dans **Panneau de configuration** > **Réseau et Internet** > **Centre Réseau et partage**
-2. Dans le menu gauche choisir **Modifier les paramètres de la carte**
-3. Clic droit sur **Ethernet**, choisir **Propriétés**
-4. Dérouler la boite et choisir **Protocole Internet version 4 (TCP/IPv4)
-5. Clic sur **Propriétés**
-6. Sélectioner **utiliser l'adresse de serveur DNS suivante :**
-7. Dans le premier champ, entrer `127.0.0.1`
-8. Cliquer sur **OK**
-
 ## Test
 
 1. Ouvrir un navigateur et vérifier qu'il est toujours possible de naviguer sur Internet.
-2. Dans le projet aller dans le répertoire `./examples` et lancer `docker-compose up -d`
+2. Dans le projet aller dans le répertoire ``./examples` et lancer `docker-compose up -d`
 3. Dans le navigateur <http://dev.domain.fr> doit être accéssible
 4. L'accès en HTTPS doit également fonctionner <https://dev.domain.fr>
