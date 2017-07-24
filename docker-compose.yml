@@ -36,6 +36,8 @@ services:
     image: consul
     container_name: consul
     restart: unless-stopped
+    hostname: consul
+    command: agent -server -client 0.0.0.0 -data-dir=/consul/data -config-dir=/consul/config -ui -bootstrap-expect 1
     volumes:
       - "./data:/data:ro"
       - "./scripts/kvstore/kvstore:/usr/bin/kvstore:ro"
