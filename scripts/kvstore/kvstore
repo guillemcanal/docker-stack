@@ -5,9 +5,11 @@ set -o pipefail
 initialize() {
     echo "[info] initializing..."
     _check_kvstore
+    [ -f "/initialized" ] && { echo "---> consul already initialized"; return; }
     echo " ---> initialize traefik config"
     consul kv delete -recurse traefik/ > /dev/null
     consul kv import @/data/kvstore/traefik.json > /dev/null
+    touch /initialized
 }
 
 refresh_certificates() {

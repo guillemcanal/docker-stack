@@ -34,7 +34,14 @@ network_local_dns() {
 }
 
 network_add_root_ca() {
-    _not_implemented
+    local CERT_FILE="$__root/data/ssl/rootCA.pem"
+
+    [ -f "$CERT_FILE" ] || {
+        err "[error] generate a root certificate first, abording"
+        exit 1
+    }
+
+    sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$CERT_FILE"
 }
 
 _not_implemented() {
@@ -45,8 +52,6 @@ _not_implemented() {
 _flush_dns_cache() {
     echo " ---> flush cache"
     sudo killall -HUP mDNSResponder
-    #sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
-    #sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.mDNSResponder.plist
 }
 
 _get_active_connection() {

@@ -47,20 +47,7 @@ docker-compose -f example/docker-compose.yml up
 
 > **Note**: <kdb>Ctrl+C</kdb> to exit
 
-Open your browser on <http://dev.domain.fr>
-
-## HTTPS support
-
-The stack generate a root certificate in `/data/ssl/rootCA.pem`.  
-You will need to install it on your browser and/or operating system 
-
-Here is [a very good guide](https://www.bounca.org/tutorials/install_root_certificate.html) about how to do it
-
-Once done, you will be able to access your container using **HTTPS**.  
-All you need to do is to add the following labels (see `./example/docker-compose.yml` for a working example) :
-
-- `ssl.domain`: The main domain for your Docker container (ex: `dev.company.fr`)
-- `ssl.domain.alt_names` : A coma separated list of alternatives domains names for your Docker containers (ex: `dev.company.fr,dev.admin.company.fr`)
+Open your browser on <http://dev.domain.fr> or <https://dev.domain.fr>
 
 ## Customize
 
