@@ -1,31 +1,24 @@
 # Windows
 
-Pour le moment, la stack Docker n'est pas automatisée pour Windows.
-Vous devez faire ces opérations manuellement.
+Pour le moment, la stack Docker est partiellement automatisée
 
 > **Note** : Tester sur Windows 10
 
-## Lancer `docker-compose`
+## Lancer la stack
 
 ```bash
-docker-compose up -d
+make run
 ```
 
 ## Ajouter le certificat racine
 
-1. Copier et coller `./data/ssl/rootCA.pem`en **dehors** du projet (sur le bureau par exemple)
-2. Le renommer en `rootCA.crt`
-3. Dans la barre de recherche Windows, rechercher `cmd`, clique droit **Invite de commandes** le premier résultat et choisir **Executer en tant qu'administrateur**
-4. Dans le terminal, taper ``certmgr`
-5. Clic droit sur **Autorités de certification racines de confiance** > **Certificats**
-6. Sélectionner **Toutes les tâches** > **Importer...**
-7. Cliquer sur **Suivant**
-8. Cliquer sur **Parcourir...*** et choisir le `rootCA.crt`
-9. Cliquer sur **Suivant**
-10. Cliquer sur **Suivant**, encore.
-11. Cliquer sur **Terminer**
+1. Copier et coller `./data/ssl/rootCA.pem` en **dehors** du projet (sur le bureau par exemple)
+2. Le renommer le en `rootCA.cert.crt`
+3. Ouvrir le fichier et choisir "Installer le certificat"
+4. Installer le certificat dans le sous répertoire "Trusted Root Certification Authorities"
+5. Valider
 
-> **Note**: Il doit y avoir un certificat **lagardere-active.com** dans le bloc de droite
+![Install root certificate on Windows](install_root_windows.gif)
 
 ## Désactiver la découverte de paramètres du proxy Windows
 

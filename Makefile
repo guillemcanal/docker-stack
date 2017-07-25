@@ -13,6 +13,12 @@ run: ## Start Traefik and your local DNS
 	@docker-compose up -d
 	@echo " ---> enable local network"
 	@scripts/network enable
+	@echo " ---> installing the root certificate"
+	@scripts/network install-ca
+	@echo
+	@echo "------------------------------"
+	@echo "redémarrez vos navigateurs web"
+	@echo "------------------------------"
 
 clean: ## Remove Traefik and your local DNS
 	@echo "[info] cleaning your docker stack"
